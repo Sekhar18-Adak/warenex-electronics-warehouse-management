@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WareNex | <%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-light">
+    <div class="container-fluid">
+      <div class="row g-0">
+        <aside class="col-lg-3 col-xl-2 sidebar p-4" style="background: #ffffff; border-right: 1px solid #e7ebf0; min-height: 100vh; position: sticky; top: 0;">
+          <div class="mb-4">
+            <div class="small text-uppercase text-muted mb-2">Manager Menu</div>
+            <nav class="nav flex-column gap-1">
+              <a class="nav-link px-3 py-2" href="/manager/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+              <a class="nav-link px-3 py-2" href="/manager/products"><i class="bi bi-box-seam me-2"></i>Products</a>
+              <a class="nav-link px-3 py-2" href="/manager/inventory"><i class="bi bi-stack me-2"></i>Inventory</a>
+              <a class="nav-link px-3 py-2" href="/manager/purchases"><i class="bi bi-cart3 me-2"></i>Purchases</a>
+              <a class="nav-link px-3 py-2" href="/manager/suppliers"><i class="bi bi-truck me-2"></i>Suppliers</a>
+              <a class="nav-link px-3 py-2" href="/manager/tasks"><i class="bi bi-list-check me-2"></i>Assign Tasks</a>
+              <a class="nav-link px-3 py-2" href="/manager/reports"><i class="bi bi-bar-chart me-2"></i>Reports</a>
+              <a class="nav-link px-3 py-2" href="/manager/announcements"><i class="bi bi-megaphone me-2"></i>Announcements</a>
+              <a class="nav-link px-3 py-2" href="/manager/profile"><i class="bi bi-person-circle me-2"></i>Profile</a>
+            </nav>
+          </div>
+        </aside>
+
+        <main class="col-lg-9 col-xl-10 py-5 px-4">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h4 mb-0">Edit Supplier</h1>
+                    <a href="<%= listPath %>" class="btn btn-outline-secondary btn-sm">Back</a>
+                  </div>
+
+              <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger"><%= error %></div>
+              <% } %>
+
+                  <form action="<%= actionPath %>" method="post">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Supplier Code</label>
+                        <input type="text" class="form-control" name="supplier_code" value="<%= supplier.supplier_code || '' %>" required />
+                      </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Supplier Name</label>
+                    <input type="text" class="form-control" name="supplier_name" value="<%= supplier.supplier_name || '' %>" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Contact Person</label>
+                    <input type="text" class="form-control" name="contact_person" value="<%= supplier.contact_person || '' %>" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control" name="phone" value="<%= supplier.phone || '' %>" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="<%= supplier.email || '' %>" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">GST Number</label>
+                    <input type="text" class="form-control" name="gst_number" value="<%= supplier.gst_number || '' %>" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-control" name="address" rows="3"><%= supplier.address || '' %></textarea>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control" name="city" value="<%= supplier.city || '' %>" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">State</label>
+                    <input type="text" class="form-control" name="state" value="<%= supplier.state || '' %>" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Postal Code</label>
+                    <input type="text" class="form-control" name="postal_code" value="<%= supplier.postal_code || '' %>" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                      <option value="Active" <%= supplier.status === 'Active' ? 'selected' : '' %>>Active</option>
+                      <option value="Inactive" <%= supplier.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+                    </select>
+                  </div>
+                      <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                        <a href="<%= listPath %>" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Supplier</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WareNex | <%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <style>
+      body {
+        background-color: #f5f7fb;
+        color: #17324d;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e7ebf0;
+        min-height: calc(100vh - 76px);
+        position: sticky;
+        top: 76px;
+      }
+
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: #4a5d72;
+        border-radius: 10px;
+      }
+
+      .nav-link:hover {
+        background-color: #eef4ff;
+        color: #0d6efd;
+      }
+
+      .summary-card {
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        background: #fff;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.42rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .status-pending { background: #fff4d6; color: #9a6500; }
+      .status-in-progress { background: #dfe9ff; color: #1646a0; }
+      .status-completed { background: #e8f5e9; color: #2e7d32; }
+      .status-cancelled { background: #fce7e7; color: #b42318; }
+
+      .priority-low { background: #e8f5e9; color: #2e7d32; }
+      .priority-medium { background: #fff4d6; color: #9a6500; }
+      .priority-high { background: #ffe5d5; color: #c25000; }
+      .priority-urgent { background: #fce7e7; color: #b42318; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+      <div class="container-fluid px-4 py-3">
+        <a class="navbar-brand fw-semibold text-primary d-flex align-items-center gap-2" href="/admin/dashboard">
+          <img
+            src="/image/ChatGPT%20Image%20Nov%201,%202026,%2004_15_44%20PM.png"
+            alt="WareNex logo"
+            width="34"
+            height="34"
+            class="rounded-circle border"
+            style="object-fit: cover;"
+          />
+          <span>WareNex</span>
+        </a>
+        <div class="navbar-nav ms-auto gap-3 align-items-center">
+          <div class="text-muted small">Logged in as <strong>Administrator</strong></div>
+          <form action="/admin/logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row g-0">
+        <aside class="col-lg-2 sidebar p-3">
+          <h6 class="text-uppercase small text-muted px-2 mb-3">Main Navigation</h6>
+          <nav class="nav flex-column gap-1">
+            <a class="nav-link px-3 py-2" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link px-3 py-2" href="/admin/employee"><i class="bi bi-people me-2"></i>Employees</a>
+            <a class="nav-link px-3 py-2" href="/admin/inventory"><i class="bi bi-stack me-2"></i>Inventory</a>
+            <a class="nav-link px-3 py-2" href="/admin/tasks"><i class="bi bi-list-check me-2"></i>Tasks</a>
+            <a class="nav-link px-3 py-2" href="/admin/announcements"><i class="bi bi-megaphone me-2"></i>Announcements</a>
+            <a class="nav-link px-3 py-2" href="/admin/suppliers"><i class="bi bi-truck me-2"></i>Suppliers</a>
+            <a class="nav-link px-3 py-2" href="/admin/reports"><i class="bi bi-bar-chart me-2"></i>Reports</a>
+          </nav>
+        </aside>
+
+        <main class="col-lg-10 p-4 p-xl-5">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h1 class="h3 fw-semibold mb-2">Tasks</h1>
+              <p class="text-muted mb-0">Monitor all task assignments, deadlines, owners, and current status from the database.</p>
+            </div>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-2">
+              <div class="summary-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Total Tasks</div>
+                <div class="display-6 fw-semibold mt-2"><%= summary.total %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-2">
+              <div class="summary-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Pending</div>
+                <div class="display-6 fw-semibold mt-2 text-warning"><%= summary.pending %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-2">
+              <div class="summary-card p-4 h-100">
+                <div class="text-muted small text-uppercase">In Progress</div>
+                <div class="display-6 fw-semibold mt-2 text-primary"><%= summary.inProgress %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-2">
+              <div class="summary-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Completed</div>
+                <div class="display-6 fw-semibold mt-2 text-success"><%= summary.completed %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-2">
+              <div class="summary-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Cancelled</div>
+                <div class="display-6 fw-semibold mt-2 text-danger"><%= summary.cancelled %></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>Task Code</th>
+                      <th>Title</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Due Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (!tasks || !tasks.length) { %>
+                      <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No tasks found in the task table.</td>
+                      </tr>
+                    <% } else { %>
+                      <% tasks.forEach((task) => { %>
+                        <tr>
+                          <td class="fw-semibold"><%= task.task_code || 'N/A' %></td>
+                          <td><%= task.title || 'Untitled Task' %></td>
+                          <td>
+                            <span class="status-badge priority-<%= String(task.priority || 'Medium').toLowerCase() %>">
+                              <%= task.priority || 'Medium' %>
+                            </span>
+                          </td>
+                          <td>
+                            <span class="status-badge status-<%= String(task.status || 'Pending').toLowerCase().replace(/\s+/g, '-') %>">
+                              <%= task.status || 'Pending' %>
+                            </span>
+                          </td>
+                          <td><%= task.due_date ? new Date(task.due_date).toLocaleDateString() : 'N/A' %></td>
+                          <td>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-primary view-task-btn"
+                              data-bs-toggle="modal"
+                              data-bs-target="#taskViewModal"
+                              data-task='<%= JSON.stringify(task) %>'>
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="taskViewModal" tabindex="-1" aria-labelledby="taskViewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                  <div>
+                    <span class="text-muted small text-uppercase">Task Details</span>
+                    <h5 class="modal-title mt-1" id="taskViewModalLabel">Task</h5>
+                  </div>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Task Code</div>
+                      <div id="taskCodeValue" class="fw-semibold"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Priority</div>
+                      <div id="taskPriorityValue"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Status</div>
+                      <div id="taskStatusValue"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Due Date</div>
+                      <div id="taskDueDateValue"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Assigned By</div>
+                      <div id="taskAssignedByValue"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small text-uppercase">Assigned To</div>
+                      <div id="taskAssignedToValue"></div>
+                    </div>
+                    <div class="col-12">
+                      <div class="text-muted small text-uppercase">Title</div>
+                      <div id="taskTitleValue" class="fw-semibold"></div>
+                    </div>
+                    <div class="col-12">
+                      <div class="text-muted small text-uppercase">Description</div>
+                      <div id="taskDescriptionValue"></div>
+                    </div>
+                    <div class="col-12">
+                      <div class="text-muted small text-uppercase">Additional Notes</div>
+                      <div id="taskNotesValue"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('taskViewModal');
+        const taskCodeValue = document.getElementById('taskCodeValue');
+        const taskPriorityValue = document.getElementById('taskPriorityValue');
+        const taskStatusValue = document.getElementById('taskStatusValue');
+        const taskDueDateValue = document.getElementById('taskDueDateValue');
+        const taskAssignedByValue = document.getElementById('taskAssignedByValue');
+        const taskAssignedToValue = document.getElementById('taskAssignedToValue');
+        const taskTitleValue = document.getElementById('taskTitleValue');
+        const taskDescriptionValue = document.getElementById('taskDescriptionValue');
+        const taskNotesValue = document.getElementById('taskNotesValue');
+
+        document.querySelectorAll('.view-task-btn').forEach((button) => {
+          button.addEventListener('click', () => {
+            const task = JSON.parse(button.dataset.task || '{}');
+
+            const priority = task.priority || 'Medium';
+            const status = task.status || 'Pending';
+
+            taskCodeValue.textContent = task.task_code || 'N/A';
+            taskPriorityValue.innerHTML = `<span class="status-badge priority-${String(priority).toLowerCase()}">${priority}</span>`;
+            taskStatusValue.innerHTML = `<span class="status-badge status-${String(status).toLowerCase().replace(/\s+/g, '-')}">${status}</span>`;
+            taskDueDateValue.textContent = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'N/A';
+            taskAssignedByValue.textContent = task.assigned_by_name || 'Unknown';
+            taskAssignedToValue.textContent = task.assigned_to_name || 'Unknown';
+            taskTitleValue.textContent = task.title || 'Untitled Task';
+            taskDescriptionValue.textContent = task.description || 'No description provided.';
+            taskNotesValue.textContent = task.additional_notes || 'No additional notes provided.';
+
+            const modalTitle = modal.querySelector('.modal-title');
+            modalTitle.textContent = task.title || 'Task Details';
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

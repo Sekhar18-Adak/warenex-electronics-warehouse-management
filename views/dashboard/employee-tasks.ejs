@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WareNex | <%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <style>
+      body {
+        background: #f5f7fb;
+        color: #17324d;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e7ebf0;
+        min-height: calc(100vh - 76px);
+        position: sticky;
+        top: 76px;
+        padding-bottom: 2rem;
+      }
+
+      .sidebar .nav-link {
+        color: #4a5d72;
+        border-radius: 10px;
+      }
+
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background-color: #eef4ff;
+        color: #0d6efd;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.42rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.42rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+      <div class="container-fluid px-4 py-3">
+        <a class="navbar-brand fw-semibold text-primary" href="/employee/dashboard">Employee Workspace</a>
+        <div class="d-flex gap-3 align-items-center">
+          <div class="d-flex align-items-center gap-2 text-muted small">
+            <% if (user?.profile_image) { %>
+              <img src="<%= user.profile_image %>" alt="Profile image" class="rounded-circle border" style="width: 28px; height: 28px; object-fit: cover;" />
+            <% } else { %>
+              <div class="rounded-circle border bg-light d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i class="bi bi-person-fill text-secondary"></i>
+              </div>
+            <% } %>
+            <span>Signed in as <strong><%= user?.name || 'Employee' %></strong></span>
+          </div>
+          <form action="/logout" method="post" class="mb-0">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row g-0">
+        <aside class="col-lg-3 col-xl-2 sidebar p-4">
+          <div class="mb-4">
+            <div class="small text-uppercase text-muted mb-2">Employee Menu</div>
+            <nav class="nav flex-column gap-1">
+              <a class="nav-link px-3 py-2" href="/employee/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+              <a class="nav-link px-3 py-2" href="/employee/inventory"><i class="bi bi-box-seam me-2"></i>Inventory View</a>
+              <a class="nav-link px-3 py-2 active" href="/employee/tasks"><i class="bi bi-list-check me-2"></i>Assigned Tasks</a>
+              <a class="nav-link px-3 py-2" href="/employee/profile"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+            </nav>
+          </div>
+        </aside>
+
+        <main class="col-lg-9 col-xl-10 p-4 p-xl-5">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h1 class="h3 fw-semibold mb-2">Assigned Tasks</h1>
+              <p class="text-muted mb-0">Track your assigned work, priorities, and task status in one place.</p>
+            </div>
+            <a href="/employee/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+          </div>
+
+          <% if (successMessage) { %>
+            <div class="alert alert-success mt-0 mb-3"><%= successMessage %></div>
+          <% } %>
+          <% if (errorMessage) { %>
+            <div class="alert alert-danger mt-0 mb-3"><%= errorMessage %></div>
+          <% } %>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <% if (!tasks || !tasks.length) { %>
+                <div class="text-center text-muted py-5">
+                  <i class="bi bi-list-check fs-1 d-block mb-3"></i>
+                  No tasks have been assigned to you yet.
+                </div>
+              <% } else { %>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Task Code</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% tasks.forEach((task) => { %>
+                        <tr>
+                          <td class="fw-semibold text-primary"><%= task.task_code %></td>
+                          <td>
+                            <% const priorityClass = task.priority === 'High' || task.priority === 'Urgent' ? 'bg-danger-subtle text-danger' : task.priority === 'Medium' ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success'; %>
+                            <span class="priority-badge <%= priorityClass %>"><%= task.priority || 'Medium' %></span>
+                          </td>
+                          <td>
+                            <% const statusClass = task.status === 'Completed' ? 'bg-success-subtle text-success' : task.status === 'In Progress' ? 'bg-primary-subtle text-primary' : task.status === 'Cancelled' ? 'bg-secondary-subtle text-secondary' : 'bg-warning-subtle text-warning'; %>
+                            <span class="status-badge <%= statusClass %>"><%= task.status || 'Pending' %></span>
+                          </td>
+                          <td class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-outline-primary btn-sm view-task-btn"
+                              data-task='<%= JSON.stringify({
+                                id: task.id,
+                                task_code: task.task_code,
+                                title: task.title,
+                                description: task.description,
+                                priority: task.priority,
+                                status: task.status,
+                                start_date: task.start_date,
+                                due_date: task.due_date,
+                                additional_notes: task.additional_notes,
+                                assigned_by_name: task.assigned_by_name,
+                                assigned_to_name: task.assigned_to_name,
+                                created_at: task.created_at
+                              }) %>'
+                              data-bs-toggle="modal"
+                              data-bs-target="#taskDetailsModal"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal fade" id="taskDetailsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Task Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <div class="text-muted small text-uppercase">Task Code</div>
+              <div id="modalTaskCode" class="fw-semibold fs-5 text-primary"></div>
+            </div>
+
+            <div class="mb-3">
+              <div class="text-muted small text-uppercase">Title</div>
+              <div id="modalTaskTitle" class="fw-semibold"></div>
+            </div>
+
+            <div class="mb-3">
+              <div class="text-muted small text-uppercase">Description</div>
+              <div id="modalTaskDescription" class="text-body-secondary"></div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Priority</div>
+                <div id="modalTaskPriority"></div>
+              </div>
+              <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Status</div>
+                <div id="modalTaskStatus"></div>
+              </div>
+              <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Assigned By</div>
+                <div id="modalAssignedBy"></div>
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <div class="text-muted small text-uppercase">Start Date</div>
+                <div id="modalStartDate"></div>
+              </div>
+              <div class="col-md-6">
+                <div class="text-muted small text-uppercase">Due Date</div>
+                <div id="modalDueDate"></div>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <div class="text-muted small text-uppercase">Additional Notes</div>
+              <div id="modalTaskNotes" class="text-body-secondary"></div>
+            </div>
+
+            <form id="taskStatusForm" method="post" class="mt-4 border rounded-3 p-3 bg-light">
+              <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div class="flex-grow-1">
+                  <label for="taskStatusSelect" class="form-label small text-uppercase text-muted mb-2">Update Status</label>
+                  <select id="taskStatusSelect" name="status" class="form-select">
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary mt-4 mt-md-0">Update Status</button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const viewTaskButtons = document.querySelectorAll('.view-task-btn');
+      const modalTaskCode = document.getElementById('modalTaskCode');
+      const modalTaskTitle = document.getElementById('modalTaskTitle');
+      const modalTaskDescription = document.getElementById('modalTaskDescription');
+      const modalTaskPriority = document.getElementById('modalTaskPriority');
+      const modalTaskStatus = document.getElementById('modalTaskStatus');
+      const modalAssignedBy = document.getElementById('modalAssignedBy');
+      const modalStartDate = document.getElementById('modalStartDate');
+      const modalDueDate = document.getElementById('modalDueDate');
+      const modalTaskNotes = document.getElementById('modalTaskNotes');
+      const taskStatusForm = document.getElementById('taskStatusForm');
+      const taskStatusSelect = document.getElementById('taskStatusSelect');
+
+      const normalizeDateValue = (value) => {
+        if (!value) return 'N/A';
+
+        const dateText = String(value).trim();
+        if (!dateText) return 'N/A';
+
+        return dateText.includes('T') ? dateText.split('T')[0] : dateText.split(' ')[0];
+      };
+
+      viewTaskButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const task = JSON.parse(button.dataset.task);
+
+          modalTaskCode.textContent = task.task_code || 'N/A';
+          modalTaskTitle.textContent = task.title || 'Untitled Task';
+          modalTaskDescription.textContent = task.description || 'No description provided.';
+          modalTaskPriority.innerHTML = `<span class="priority-badge ${task.priority === 'High' || task.priority === 'Urgent' ? 'bg-danger-subtle text-danger' : task.priority === 'Medium' ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success'}">${task.priority || 'Medium'}</span>`;
+          modalTaskStatus.innerHTML = `<span class="status-badge ${task.status === 'Completed' ? 'bg-success-subtle text-success' : task.status === 'In Progress' ? 'bg-primary-subtle text-primary' : task.status === 'Cancelled' ? 'bg-secondary-subtle text-secondary' : 'bg-warning-subtle text-warning'}">${task.status || 'Pending'}</span>`;
+          modalAssignedBy.textContent = task.assigned_by_name || 'Unknown';
+          modalStartDate.textContent = normalizeDateValue(task.start_date);
+          modalDueDate.textContent = normalizeDateValue(task.due_date);
+          modalTaskNotes.textContent = task.additional_notes || 'No additional notes provided.';
+
+          taskStatusForm.action = `/employee/tasks/${task.id}/status`;
+          taskStatusSelect.value = task.status || 'Pending';
+        });
+      });
+    </script>
+  </body>
+</html>

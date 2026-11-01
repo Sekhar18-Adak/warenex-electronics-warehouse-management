@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WareNex | <%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/landing.css" />
+    <style>
+      body {
+        background-color: #f5f7fb;
+        color: #17324d;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e7ebf0;
+        min-height: calc(100vh - 76px);
+        position: sticky;
+        top: 76px;
+      }
+
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: #4a5d72;
+        border-radius: 10px;
+      }
+
+      .nav-link:hover {
+        background-color: #eef4ff;
+        color: #0d6efd;
+      }
+
+      .module-card {
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        transition: none;
+      }
+
+      .module-card:hover {
+        border-color: #cfe0ff;
+      }
+
+      .status-badge {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+      <div class="container-fluid px-4 py-3">
+        <a class="navbar-brand fw-semibold text-primary d-flex align-items-center gap-2" href="/admin/dashboard">
+          <img
+            src="/image/ChatGPT%20Image%20Nov%201,%202026,%2004_15_44%20PM.png"
+            alt="WareNex logo"
+            width="34"
+            height="34"
+            class="rounded-circle border"
+            style="object-fit: cover;"
+          />
+          <span>WareNex</span>
+        </a>
+        <div class="navbar-nav ms-auto gap-3 align-items-center">
+          <div class="text-muted small">Logged in as <strong>Administrator</strong></div>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Admin Profile
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <form action="/admin/logout" method="post" class="d-inline">
+                  <button type="submit" class="dropdown-item">Logout</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+          <form action="/admin/logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row g-0">
+        <aside class="col-lg-2 sidebar p-3">
+          <h6 class="text-uppercase small text-muted px-2 mb-3">Main Navigation</h6>
+          <nav class="nav flex-column gap-1">
+            <a class="nav-link px-3 py-2" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link px-3 py-2" href="/admin/employee"><i class="bi bi-people me-2"></i>Employees</a>
+            <a class="nav-link px-3 py-2" href="/admin/inventory"><i class="bi bi-stack me-2"></i>Inventory</a>
+            <a class="nav-link px-3 py-2" href="/admin/tasks"><i class="bi bi-list-check me-2"></i>Tasks</a>
+            <a class="nav-link px-3 py-2" href="/admin/announcements"><i class="bi bi-megaphone me-2"></i>Announcements</a>
+            <a class="nav-link px-3 py-2" href="/admin/suppliers"><i class="bi bi-truck me-2"></i>Suppliers</a>
+            <a class="nav-link px-3 py-2" href="/admin/reports"><i class="bi bi-bar-chart me-2"></i>Reports</a>
+          </nav>
+        </aside>
+
+        <main class="col-lg-10 p-4 p-xl-5">
+          <div class="row g-4">
+            <div class="col-12">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
+                    <div>
+                      <h1 class="h3 fw-semibold mb-2">Welcome Back, Administrator</h1>
+                      <p class="text-muted mb-0">Manage warehouse operations, employees, inventory, purchases, and sales from a centralized control panel.</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
+                        <i class="bi bi-person-plus me-2"></i>Create Employee
+                      </button>
+                      <span class="badge bg-primary">System Status: Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <% if (successMessage) { %>
+            <div class="col-12">
+              <div class="alert alert-success d-flex align-items-center justify-content-between" role="alert">
+                <span><i class="bi bi-check-circle-fill me-2"></i><%= successMessage %></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            </div>
+            <% } %>
+
+            <div class="col-12">
+              <div class="row g-4">
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-people-fill"></i></div>
+                      <h5 class="fw-semibold">Employee Management</h5>
+                      <p class="text-muted small">Create employee accounts, assign roles, manage permissions, and monitor employee activity.</p>
+                      <a href="/admin/employee" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-box2-heart"></i></div>
+                      <h5 class="fw-semibold">Product Management</h5>
+                      <p class="text-muted small">Manage electronics products including laptops, desktops, keyboards, mice, monitors, storage devices, and accessories.</p>
+                      <a href="#" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-stack"></i></div>
+                      <h5 class="fw-semibold">Inventory Details</h5>
+                      <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Out of stock</span>
+                        <span class="fw-semibold text-danger"><%= inventorySummary.outOfStockProducts %></span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Low stock</span>
+                        <span class="fw-semibold text-warning"><%= inventorySummary.lowStockProducts %></span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted small">Full stock</span>
+                        <span class="fw-semibold text-success"><%= inventorySummary.fullStockProducts %></span>
+                      </div>
+                      <a href="/admin/inventory" class="btn btn-outline-primary btn-sm mt-3">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-cart4"></i></div>
+                      <h5 class="fw-semibold">Purchase Management</h5>
+                      <p class="text-muted small">Create purchase orders, manage suppliers, receive products, and maintain procurement records.</p>
+                      <a href="#" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-truck"></i></div>
+                      <h5 class="fw-semibold">Supplier Management</h5>
+                      <p class="text-muted small">Maintain supplier information, procurement relationships, and purchase history.</p>
+                      <a href="/admin/suppliers" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-clock-history"></i></div>
+                      <h5 class="fw-semibold">Stock History</h5>
+                      <p class="text-muted small">Review inventory movement history, stock adjustments, transfers, and audit records.</p>
+                      <a href="#" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-list-check"></i></div>
+                      <h5 class="fw-semibold">Task Management</h5>
+                      <p class="text-muted small">Review all assigned tasks, deadlines, assignees, and task status directly from the database.</p>
+                      <a href="/admin/tasks" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                  <div class="card module-card h-100">
+                    <div class="card-body p-4">
+                      <div class="text-primary fs-3 mb-3"><i class="bi bi-graph-up"></i></div>
+                      <h5 class="fw-semibold">Reports & Analytics</h5>
+                      <p class="text-muted small">Review submitted sales and manager reports, track priorities, and open detailed report records.</p>
+                      <a href="/admin/reports" class="btn btn-outline-primary btn-sm">Open Module</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <h4 class="fw-semibold mb-3">Recent Activities</h4>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-3">New employee account created</li>
+                    <li class="list-group-item px-0 py-3">Employee login detected</li>
+                    <li class="list-group-item px-0 py-3">Inventory updated</li>
+                    <li class="list-group-item px-0 py-3">Purchase order received</li>
+                    <li class="list-group-item px-0 py-3">Sales transaction completed</li>
+                    <li class="list-group-item px-0 py-3">Product stock modified</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                  <h4 class="fw-semibold mb-3">System Status</h4>
+                  <div class="row g-3">
+                    <div class="col-md-3">
+                      <div class="border rounded p-3 h-100">
+                        <div class="small text-uppercase text-muted">Authentication</div>
+                        <div class="fw-semibold mt-1">Active</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="border rounded p-3 h-100">
+                        <div class="small text-uppercase text-muted">Database</div>
+                        <div class="fw-semibold mt-1">Connected</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="border rounded p-3 h-100">
+                        <div class="small text-uppercase text-muted">Inventory Service</div>
+                        <div class="fw-semibold mt-1">Running</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="border rounded p-3 h-100">
+                        <div class="small text-uppercase text-muted">Access Control</div>
+                        <div class="fw-semibold mt-1">Enabled</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal fade" id="createEmployeeModal" tabindex="-1" aria-labelledby="createEmployeeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createEmployeeModalLabel">Create Employee Account</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/admin/createemployee" method="post" id="createEmployeeForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" name="name" class="form-control" placeholder="Enter full name" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" name="email" class="form-control" placeholder="employee@example.com" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Temporary Password</label>
+                  <div class="input-group">
+                    <input type="password" name="password" id="employeePassword" class="form-control" placeholder="Create password" required />
+                    <button type="button" class="btn btn-outline-secondary" id="toggleEmployeePassword" aria-label="Show password">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Role</label>
+                  <select name="role" class="form-select" required>
+                    <option value="Manager">Manager</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Employee">Employee</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Status</label>
+                  <select name="status" class="form-select" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <p class="text-muted small mb-3">Employee accounts created here can access the system using their assigned email address and password.</p>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Create Employee</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <script>
+      const toggleButton = document.getElementById('toggleEmployeePassword');
+      const passwordInput = document.getElementById('employeePassword');
+
+      if (toggleButton && passwordInput) {
+        toggleButton.addEventListener('click', () => {
+          const isHidden = passwordInput.type === 'password';
+          passwordInput.type = isHidden ? 'text' : 'password';
+          toggleButton.innerHTML = isHidden ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+          toggleButton.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        });
+      }
+
+      // Handle form submission - close modal
+      const createEmployeeForm = document.getElementById('createEmployeeForm');
+      if (createEmployeeForm) {
+        createEmployeeForm.addEventListener('submit', () => {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('createEmployeeModal'));
+          if (modal) {
+            modal.hide();
+          }
+        });
+      }
+
+      // Auto-dismiss success alert after 5 seconds
+      document.addEventListener('DOMContentLoaded', () => {
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+          setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(successAlert);
+            bsAlert.close();
+          }, 5000);
+        }
+      });
+    </script>
+  </body>
+</html>

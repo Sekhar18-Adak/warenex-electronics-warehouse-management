@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WareNex | <%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <style>
+      body {
+        background-color: #f5f7fb;
+        color: #17324d;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e7ebf0;
+        min-height: calc(100vh - 76px);
+        position: sticky;
+        top: 76px;
+      }
+
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: #4a5d72;
+        border-radius: 10px;
+      }
+
+      .nav-link:hover {
+        background-color: #eef4ff;
+        color: #0d6efd;
+      }
+
+      .report-card {
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        background: #fff;
+      }
+
+      .priority-badge {
+        border-radius: 999px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.78rem;
+      }
+
+      .status-badge {
+        border-radius: 999px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.78rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+      <div class="container-fluid px-4 py-3">
+        <a class="navbar-brand fw-semibold text-primary d-flex align-items-center gap-2" href="/admin/dashboard">
+          <img
+            src="/image/ChatGPT%20Image%20Nov%201,%202026,%2004_15_44%20PM.png"
+            alt="WareNex logo"
+            width="34"
+            height="34"
+            class="rounded-circle border"
+            style="object-fit: cover;"
+          />
+          <span>WareNex</span>
+        </a>
+        <div class="navbar-nav ms-auto gap-3 align-items-center">
+          <div class="text-muted small">Logged in as <strong>Administrator</strong></div>
+          <form action="/admin/logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row g-0">
+        <aside class="col-lg-2 sidebar p-3">
+          <h6 class="text-uppercase small text-muted px-2 mb-3">Main Navigation</h6>
+          <nav class="nav flex-column gap-1">
+            <a class="nav-link px-3 py-2" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link px-3 py-2" href="/admin/employee"><i class="bi bi-people me-2"></i>Employees</a>
+            <a class="nav-link px-3 py-2" href="/admin/inventory"><i class="bi bi-stack me-2"></i>Inventory</a>
+            <a class="nav-link px-3 py-2" href="/admin/tasks"><i class="bi bi-list-check me-2"></i>Tasks</a>
+            <a class="nav-link px-3 py-2" href="/admin/announcements"><i class="bi bi-megaphone me-2"></i>Announcements</a>
+            <a class="nav-link px-3 py-2" href="/admin/suppliers"><i class="bi bi-truck me-2"></i>Suppliers</a>
+            <a class="nav-link px-3 py-2" href="/admin/reports"><i class="bi bi-bar-chart me-2"></i>Reports</a>
+          </nav>
+        </aside>
+
+        <main class="col-lg-10 p-4 p-xl-5">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h1 class="h3 fw-semibold mb-2">Admin Reports</h1>
+              <p class="text-muted mb-0">Track sales and manager reports submitted to the admin team.</p>
+            </div>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+          </div>
+
+          <form method="GET" action="/admin/reports" class="row g-3 align-items-end mb-4">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Submitted by</label>
+              <select class="form-select" name="role">
+                <option value="">All Roles</option>
+                <option value="Sales" <%= selectedRole === "Sales" ? "selected" : "" %>>Sales</option>
+                <option value="Manager" <%= selectedRole === "Manager" ? "selected" : "" %>>Manager</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Priority</label>
+              <select class="form-select" name="priority">
+                <option value="">All Priorities</option>
+                <option value="High" <%= selectedPriority === "High" ? "selected" : "" %>>High</option>
+                <option value="Urgent" <%= selectedPriority === "Urgent" ? "selected" : "" %>>Urgent</option>
+                <option value="Medium" <%= selectedPriority === "Medium" ? "selected" : "" %>>Medium</option>
+                <option value="Low" <%= selectedPriority === "Low" ? "selected" : "" %>>Low</option>
+              </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Apply</button>
+              <a href="/admin/reports" class="btn btn-outline-secondary">Clear</a>
+            </div>
+          </form>
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-3">
+              <div class="report-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Total Reports</div>
+                <div class="display-6 fw-semibold mt-2"><%= stats.totalReports %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="report-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Sales Reports</div>
+                <div class="display-6 fw-semibold mt-2 text-primary"><%= stats.salesReports %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="report-card p-4 h-100">
+                <div class="text-muted small text-uppercase">Manager Reports</div>
+                <div class="display-6 fw-semibold mt-2 text-success"><%= stats.managerReports %></div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+              <div class="report-card p-4 h-100">
+                <div class="text-muted small text-uppercase">High Priority</div>
+                <div class="display-6 fw-semibold mt-2 text-danger"><%= stats.highPriorityReports %></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Report Code</th>
+                      <th>Priority</th>
+                      <th>Title</th>
+                      <th>Submitted By</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (!reports || !reports.length) { %>
+                      <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No reports found yet.</td>
+                      </tr>
+                    <% } else { %>
+                      <% reports.forEach((report) => { %>
+                        <tr>
+                          <td class="fw-semibold"><%= report.report_code %></td>
+                          <td>
+                            <% if (report.priority === 'Urgent') { %>
+                              <span class="priority-badge bg-danger-subtle text-danger">Urgent</span>
+                            <% } else if (report.priority === 'High') { %>
+                              <span class="priority-badge bg-warning-subtle text-warning">High</span>
+                            <% } else if (report.priority === 'Medium') { %>
+                              <span class="priority-badge bg-primary-subtle text-primary">Medium</span>
+                            <% } else { %>
+                              <span class="priority-badge bg-success-subtle text-success">Low</span>
+                            <% } %>
+                          </td>
+                          <td><%= report.title %></td>
+                          <td>
+                            <div class="fw-semibold"><%= report.submitted_by_name %></div>
+                            <small class="text-muted"><%= report.submitted_by_role %></small>
+                          </td>
+                          <td class="text-muted small"><%= new Date(report.createdAt).toLocaleString() %></td>
+                          <td>
+                            <div class="d-flex flex-wrap gap-2">
+                              <a href="/admin/reports/<%= report.id %>" class="btn btn-primary btn-sm">View Report</a>
+                              <% if (report.attachment_path) { %>
+                                <a href="<%= report.attachment_path %>" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener noreferrer"><%= report.attachmentLabel %></a>
+                              <% } %>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
